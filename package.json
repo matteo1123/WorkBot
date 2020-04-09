@@ -1,0 +1,15 @@
+{
+  "name": "flashparser",
+  "version": "1.0.0",
+  "description": "move data from the property management system to the accounting system",
+  "main": "parser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Semroska",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^2.3.2",
+    "robotjs": "^0.6.0"
+  }
+}
