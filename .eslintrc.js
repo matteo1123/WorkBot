@@ -1,3 +1,4 @@
+// Modify VSCode settings to work with this setup https://github.com/wesbos/eslint-config-wesbos#with-vs-code
 module.exports = {
   "extends": [
     "airbnb",
@@ -19,6 +20,7 @@ module.exports = {
     "jest": true
   },
   "rules": {
+    "no-plusplus": 0,
     "no-debugger": 0,
     "no-alert": 0,
     "no-await-in-loop": 0,
