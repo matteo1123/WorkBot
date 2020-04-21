@@ -17,6 +17,13 @@ function exportReports(){
     //miscelaneous
     robot.dragMouse(905, 113);
     robot.mouseClick()
+    robot.dragMouse(908, 110);
+    robot.mouseClick()
+    robot.dragMouse(904, 112);
+    robot.mouseClick()
+    robot.dragMouse(914, 102);
+    robot.mouseClick()
+    
     //reports
     robot.dragMouse(79, 194);
     robot.mouseClick()

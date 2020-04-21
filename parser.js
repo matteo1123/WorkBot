@@ -1,130 +1,63 @@
 const robot = require('robotjs');
 const enter = require('./input.js');
-const exportReports = require('./exportReports')
-function parser (){
-    robot.setKeyboardDelay(0);
-    var inputArr = [];
-    for(let i =0; i < 10; i++){
-        inputArr.push(0);
-    }
-    let csv = require('csv-parser');
-    const fs = require('fs');
-    const filepath = require('./findFiles');
-    let fbTotal =0;
-    let taxes ={
-        occupancy:0,
-        FB:0,
-        Misc:0,
-        BanquetRoom:0,
-        Banquet:0
-    };
-    let payments = {
-        cash:0,
-        vsmc:0,
-        vsmcpos:0,
-        amex:0,
-        amexpos:0,
-        disc:0,
-        discpos:0,
-        diners:0
-    };
-    //FB starts at index 14
-    let fb ={restBreak:0,restLunch:0,restDinner:0,loungeFood:0,rsBreak:0,
-        rsLunch:0,rsDinner:0,banqBreak:0,banqLunch:0,banqDinner:0,banqCoffee:0,
-        banqRec:0,banqRoom:0,banqEquip:0,lLiq:0,lBeer:0,lWine:0, rLiq:0,rBeer:0,
-        rWine:0,bLiq:0,bBeer:0,bWine:0,rsLiq:0,rsBeer:0,rsWine:0,rsDelivery:0, 
-        fbTax:0,winnersCircle:0
-    }
-    
-    let roomRevenue = {'specialDisc':0,'individualCorp':0,'preferredCorp':0,
-    'individualGov':0,'groupCorp':0,'groupGov':0,'groupAssoc':0,'smerf':0,
-    'package':0};
-    let roomStats = {'specialDisc':0,'individualCorp':0,'preferredCorp':0,
-    'individualGov':0,'groupCorp':0,'groupGov':0,'groupAssoc':0,'smerf':0,
-    'package':0};
+const marketCodeParse = require('./marketCode.js');
+const managerReportParse = require('./managerReport.js');
+const exportReports = require('./exportReports');
+var inputArr = [];
+robot.setKeyboardDelay(0);
+let csv = require('csv-parser');
+const fs = require('fs');
+const filepath = require('./findFiles');
+let fbTotal =0;
+let taxes ={
+    occupancy:0,
+    FB:0,
+    Misc:0,
+    BanquetRoom:0,
+    Banquet:0
+};
+let payments = {
+    cash:0,
+    vsmc:0,
+    vsmcpos:0,
+    amex:0,
+    amexpos:0,
+    disc:0,
+    discpos:0,
+    diners:0
+};
+let misc = {
+    valetLaundry:0,
+    guestLaundry:0,
+    copy:0,
+    giftShop:0,
+    misc:0,
+    postage:0,
+    themePark:0,  
+};
 
-// read the Market Code Statistics file
- fs.createReadStream(filepath.marketCodeStats)
- .on('error', () =>{
-     //handle error
- })
- .pipe(csv({'separator':'\t'}))
- .on('data', (row) =>{
-if (row.GRP_SORT_ORDER ==='A'){
-    roomRevenue.groupAssoc += Number(row.PM_DAY_CREV);
-    roomStats.groupAssoc += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='B'){
-    roomRevenue.groupCorp += Number(row.PM_DAY_CREV);
-    roomStats.groupCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='C'){
-    roomRevenue.groupCorp += Number(row.PM_DAY_CREV);
-    roomStats.groupCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='D'){
-    roomRevenue.specialDisc += Number(row.PM_DAY_CREV);
-    roomStats.specialDisc += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='E'){
-    roomRevenue.individualCorp += Number(row.PM_DAY_CREV);
-    roomStats.individualCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='G'){
-    roomRevenue.individualCorp += Number(row.PM_DAY_CREV);
-    roomStats.individualCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='H'){
-    roomRevenue.package += Number(row.PM_DAY_CREV);
-    roomStats.package += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='K'){
-    roomRevenue.package += Number(row.PM_DAY_CREV);
-    roomStats.package += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='L'){
-    roomRevenue.preferredCorp += Number(row.PM_DAY_CREV);
-    roomStats.preferredCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='M'){
-    roomRevenue.individualGov += Number(row.PM_DAY_CREV);
-    roomStats.individualGov += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='N'){
-    roomRevenue.individualCorp += Number(row.PM_DAY_CREV);
-    roomStats.individualCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='P'){
-    roomRevenue.preferredCorp += Number(row.PM_DAY_CREV);
-    roomStats.preferredCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='Q'){
-    roomRevenue.groupGov += Number(row.PM_DAY_CREV);
-    roomStats.groupGov += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='R'){
-    roomRevenue.individualCorp += Number(row.PM_DAY_CREV);
-    roomStats.individualCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='S'){
-    roomRevenue.package += Number(row.PM_DAY_CREV);
-    roomStats.package += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='U'){
-    roomRevenue.smerf += Number(row.PM_DAY_CREV);
-    roomStats.smerf += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='V'){
-    roomRevenue.specialDisc += Number(row.PM_DAY_CREV);
-    roomStats.specialDisc += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='W'){
-    roomRevenue.specialDisc += Number(row.PM_DAY_CREV);
-    roomStats.specialDisc += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='X'){
-    roomRevenue.individualCorp += Number(row.PM_DAY_CREV);
-    roomStats.individualCorp += Number(row.PM_DAY_ROOM)
-}if (row.GRP_SORT_ORDER ==='Z'){
-    roomRevenue.smerf += Number(row.PM_DAY_CREV);
-    roomStats.smerf += Number(row.PM_DAY_ROOM)
+let fb ={restBreak:0,restLunch:0,restDinner:0,loungeFood:0,rsBreak:0,
+    rsLunch:0,rsDinner:0,banqBreak:0,banqLunch:0,banqDinner:0,banqCoffee:0,
+    banqRec:0,banqRoom:0,banqEquip:0,banqService:0,lLiq:0,lBeer:0,lWine:0, rLiq:0,rBeer:0,
+    rWine:0,bLiq:0,bBeer:0,bWine:0,rsLiq:0,rsBeer:0,rsWine:0,rsDelivery:0, 
+    fbTax:0,winnersCircle:0
 }
 
+let arr = marketCodeParse(filepath.marketCodeStats);
+let roomRevenue = arr[0];
+let roomStats = arr[1];
+let managerReport = managerReportParse(filepath.managerReport);
 
- })
-.on('end', (lastrow)=>{
-    console.log(roomRevenue)
-})
-
+function parser(){
+    for(let i =0; i < 144; i++){
+        inputArr.push(0);
+    }
 
     // read the trial balance file
-    fs.createReadStream(filepath.trialBalance)
-    .on('error', () =>{
+     let readstream = fs.createReadStream(filepath.trialBalance);
+    readstream.on('error', () =>{
         //handle error
     })
-
     .pipe(csv({'separator':':'}))
     .on('data', (row) =>{
         //restaurant breakfast
@@ -249,6 +182,18 @@ if (row.GRP_SORT_ORDER ==='A'){
             fb.rsDelivery += Number(row.TB_AMOUNT - (row.TB_AMOUNT/ 1.075)).toFixed(2) 
             taxes.FB += Number(row.TB_AMOUNT - fb.rsDelivery);
         }
+        //valetLaundry
+        if(row.TRX_CODE == 5000){
+            misc.valetLaundry +=  Number(row.TB_AMOUNT)
+        }
+        //copy
+        if(row.TRX_CODE == 4701|| row.TRX_CODE == 4751 || row.TRX_CODE == 4507 ||row.TRX_CODE == 4557){
+            misc.copy +=  Number(row.TB_AMOUNT)
+        }
+        // giftshop
+        if(row.TRX_CODE == 5106 || row.TRX_CODE ==5156){
+            misc.giftShop +=  Number(row.TB_AMOUNT)
+        }
         
         //add up total food and beverage for tax adjustment
         if(row.TRX_CODE >= 2000 && row.TRX_CODE <=2963){
@@ -308,13 +253,7 @@ if (row.GRP_SORT_ORDER ==='A'){
         if(row.TRX_CODE == 9015 ){
             payments.diners += (row.TB_AMOUNT * -1);
         }
-
-        // if(row.TRX_TYPE === 'PAYMENT'){
-        //     console.log('code: ', row.TRX_CODE)
-        //     console.log('amount: ', row.TB_AMOUNT)
-        // }
-    })
-    .on('end', (lastrow)=>{
+        
         let fbtaxshb = Number(fbTotal - (fbTotal/ 1.075)).toFixed(2)
         if(taxes.FB !== fbtaxshb){
             let adj = Number((taxes.FB - fbtaxshb).toFixed(2));
@@ -332,78 +271,80 @@ if (row.GRP_SORT_ORDER ==='A'){
         if(fb.loungeFood > fb.winnersCircle) fb.loungeFood += fb.winnersCircle
         else if(fb.restBreak > fb.winnersCircle)fb.restBreak += fb.winnersCircle;
         else if(fb.restLunch > fb.winnersCircle)fb.restLunch += fb.winnersCircle;
-        else fb.restDinner += fb.winnersCircle;
-        console.log('///////////////////// Food Revenue ////////////')
-        console.log('Restaurant-Breakfast: ', fb.restBreak)
-        inputArr[1] = fb.restBreak;
-        console.log('Restaurant-Lunch: ', fb.restLunch)
-        inputArr[3] = fb.restLunch;
-        console.log('Restaurant-Dinner: ', fb.restDinner)
-        console.log('Lounge Food: ', fb.loungeFood)
-        console.log('Room Service -Breakfast: ', fb.rsBreak)
-        console.log('Room Service -Lunch: ', fb.rsLunch)
-        console.log('Room Service-Dinner: ', fb.rsDinner)
-        console.log('Banquet -Breakfast: ', fb.banqBreak)
-        console.log('Banquet -Lunch: ', fb.banqLunch)
-        console.log('Banquet -Dinner: ', fb.banqDinner)
-        console.log('Banquet -Coffee Break: ', fb.banqCoffee)
-        console.log('Banquet - Reception: ', fb.banqRec)
-        console.log('Banquet  -Room Rental: ', fb.banqRoom)
-        console.log('Banquet  -Equip: ', fb.banqEquip)
+        else fb.restDinner += fb.winnersCircle;0
+
+
+        inputArr.push('checking')
+        inputArr[15] = fb.restBreak;
+        inputArr[17] = fb.restLunch;
+        inputArr[18] =fb.restDinner;
+        inputArr[20] =fb.loungeFood;
+        inputArr[22] = fb.rsBreak;
+        inputArr[23] = fb.rsLunch;
+        inputArr[24] =fb.rsDinner;
+        inputArr[26] =fb.banqBreak;
+        inputArr[27] =fb.banqLunch;
+        inputArr[28] =fb.banqDinner;
+        inputArr[29] =fb.banqCoffee;
+        inputArr[30] =fb.banqRec;
+        inputArr[32] =fb.banqRoom;
+        inputArr[33] =fb.banqEquip;
+        inputArr[34]=fb.lLiq;
+        inputArr[35] =fb.lBeer;
+        inputArr[36] =fb.lWine;
+        inputArr[37] =fb.rLiq;
+        inputArr[38] =fb.rBeer;
+        inputArr[39] =fb.rWine;
+        inputArr[40] =fb.bLiq;
+        inputArr[41] =fb.bBeer;
+        inputArr[42] =fb.bWine;
+        inputArr[43] =fb.rsLiq;
+        inputArr[44] =fb.rsBeer;
+        inputArr[45] =fb.rsWine;
+
+        inputArr[52] = misc.valetLaundry;
+        inputArr[53] = misc.guestLaundry;
+        inputArr[54] = misc.copy;
+        inputArr[55] = misc.giftShop;
+        inputArr[60] = misc.misc;
+        inputArr[61] = misc.postage;
+        inputArr[72] =misc.themePark;
+        // banq service
+        inputArr[73] =  fb.banqService;
+        //room service delivery
+        inputArr[74] = fb.rsDelivery;
+
+        inputArr[78] =taxes.occupancy.toFixed(2)
+        inputArr[80] =taxes.FB
+        inputArr[82] =taxes.Misc.toFixed(2)
+        inputArr[86] =taxes.BanquetRoom
+        inputArr[87] =taxes.Banquet
+
+
+
         
-        console.log('///////////////////// Beverage Revenue ////////////')
-        console.log('Lounge-Liquor: ', fb.lLiq)
-        console.log('Lounge-Beer: ', fb.lBeer)
-        console.log('Lounge-Wine: ', fb.lWine)
-        console.log('Restaurant-Liquor: ', fb.rLiq)
-        console.log('Restaurant-Beer: ', fb.rBeer)
-        console.log('Restaurant-Wine: ', fb.rWine)
-        console.log('Banquet-Liquor: ', fb.bLiq)
-        console.log('Banquet-Beer: ', fb.bBeer)
-        console.log('Banquet-Wine: ', fb.bW)
-        console.log('Room Service-Liquor: ', fb.rsLiq)
-        console.log('Room Service-Beer: ', fb.rsBeer)
-        console.log('Room SErvice-Wine: ', fb.rsWine)
-
-        console.log('///////////////////miscellaneous Other Revenue ///////////')
-        console.log('valet Laundry: ')
-        console.log('Guest Laundry: ')
-        console.log('copy income: ')
-        console.log('Gift Shop: ')
-        console.log('Misc/Rollaway Income: ')
-        console.log('Postage: ')
-        
-
-        console.log('//////////////////////////////Taxes///////////////////////////')
-        console.log("occupancy tax - 10.5%: ","\t", taxes.occupancy.toFixed(2))
-        console.log("F&B Sales Tax - 7.5%: ","\t\t", taxes.FB)
-        console.log("Misc. Tax - 7.5.5%: ","\t\t", taxes.Misc)
-        console.log("Banquet Room tax - 3%: ","\t", taxes.BanquetRoom)
-        console.log("Banquet tax - 7.5%: ","\t\t", taxes.Banquet)
-
-
-
-        console.log('//////////////////////////////////////////////////////////////')
-
-        console.log('//////////////////////////////Payments///////////////////////////')
-        console.log("Cash: ","\t\t\t", payments.cash.toFixed(2),"\n");
-
-        console.log("Visa/MC -Hotel: ","\t", payments.vsmc.toFixed(2));
-        console.log("Visa/MC -Rest: ","\t", payments.vsmcpos.toFixed(2),"\n");
-
-        console.log("Amex -Hotel: ","\t\t", payments.amex.toFixed(2));
-        console.log("Amex -Rest: ","\t\t", payments.amexpos.toFixed(2),"\n");
-
-        console.log("Discover -Hotel: ","\t", payments.disc.toFixed(2));
-        console.log("Discover -Rest: ","\t", payments.discpos.toFixed(2),"\n");
-
-        console.log("Diners Club -Rest: ","\t", payments.diners.toFixed(2),"\n");
-
-        console.log("actdeposit: ","\t\t", payments.cash.toFixed(2));
-        console.log('/////////////////////////////////////////////////////////////////')
-        
-    })
-    console.log(roomStats)
-    return inputArr;
+        inputArr[93] = payments.cash.toFixed(2)
+        inputArr[109] = payments.cash.toFixed(2)
+        inputArr[94] =payments.vsmc.toFixed(2)
+        inputArr[95] = payments.vsmcpos.toFixed(2)
+        inputArr[97] =payments.amex.toFixed(2)
+        inputArr[98]=payments.amexpos.toFixed(2)
+        inputArr[100]=payments.disc.toFixed(2)
+        inputArr[101]=payments.discpos.toFixed(2)
+        inputArr[103]=payments.diners.toFixed(2)
+              // Guest Ledger121 City Ledger 122 Advance deposit 123 
+              
+            })
+    .on('end', (lastrow)=>{
+              
+            })
 }
-module.exports = parser;
+
+function buyTime(){
+    console.log('completed')
+}
+console.log(inputArr)
+parser();
+setTimeout(buyTime, 2000)
+
+module.exports = inputArr;
