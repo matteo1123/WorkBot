@@ -6,18 +6,18 @@ const robot = require('robotjs');
 // }
 
 // robot.keyToggle('tab', 'down','alt')
-function enter(arr){
-    robot.setKeyboardDelay(1);    
+function enter(arr) {
+  robot.setKeyboardDelay(1);
 
-    robot.dragMouse(1042, 66);
-    robot.mouseClick()
-    arr.forEach((val)=>{
-        if(val - Math.round(val) > 0){
-            robot.typeString(val.toFixed(2))
-        }else{
-            robot.typeString(val.toString());
-        }
-        robot.keyTap("enter")
-    })
+  robot.dragMouse(1042, 66);
+  robot.mouseClick();
+  arr.forEach(val => {
+    if (val - Math.round(val) > 0) {
+      robot.typeString(val.toFixed(2));
+    } else {
+      robot.typeString(val.toString());
+    }
+    robot.keyTap('enter');
+  });
 }
 module.exports = enter;
